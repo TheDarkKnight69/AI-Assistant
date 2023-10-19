@@ -1,0 +1,1 @@
+notepad="E:\\shortcuts\\Notepad"
