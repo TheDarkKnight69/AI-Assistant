@@ -34,8 +34,12 @@ if __name__ == "__main__":
         query=takecommand().lower()
         if("jarvis" in query):
             wishme()
-            while True:
-                if("open notepad" in query):
-                    notepad=variables.notepad
-                    os.startfile(notepad)
-                    query=""
+            if("open notepad" in query):
+                speak("opening Notepad")
+                notepad=variables.notepad
+                os.startfile(notepad)
+                query=""
+            elif(" open calculator" in query):
+                speak("Opening Calculator")
+                calculator=variables.calculator
+                os.startfile(calculator)
