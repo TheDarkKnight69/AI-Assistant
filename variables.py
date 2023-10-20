@@ -1,6 +1,7 @@
 import datetime
 notepad="C:\\Windows\\system32\\notepad.exe"
 calculator="C:\\Windows\\System32\\calc.exe"
+<<<<<<< HEAD
 time = str(datetime.datetime.now())
 time = time[11:16]
 date = str(datetime.datetime.now())
@@ -23,3 +24,7 @@ greetings = [
     "Hello, how can I be of help to you?",
     "Good to have you here! What's your command?"
     ]
+=======
+wolframalpha="84R4TX-TG5AV8QHTE"
+openweather="bf40480d5f310eeebe6803c50e8fda12"
+>>>>>>> 50df3b8adfc3aee949ad0b8ba4f214cff072c6d3
