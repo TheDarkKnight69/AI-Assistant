@@ -5,6 +5,7 @@ import variables
 import wolframalpha
 import requests
 import time
+import webbrowser
 import random
 import sys
 from GoogleNews import GoogleNews
@@ -136,6 +137,8 @@ if __name__ == "__main__":
                 print(variables.time)
             elif query.endswith("date today") or query.endswith("date"):
                 speak(f"The date today is {variables.date}.")
+            elif(("news") in query or "headlines" in query):
+                news()    
             else:
                         try:
                             client = wolframalpha.Client(variables.wolframalpha)
@@ -145,19 +148,27 @@ if __name__ == "__main__":
                             speak(f"The Answer is {answer}")
                         except:
                             speak("I'm sorry, I could not understand you. I will search the web for an answer. Hang on! ")
-            
-            elif(("news" or "headlines") in query):
-                news()
+                            base_url = "http://www.google.com/search?q="
+                            final_url = base_url + query.replace(" ","%20")
+                            webbrowser.open(final_url, new = 2)
+
+        elif (query.startswith("search") or query.startswith("google")):
+            speak("Searching. Please wait!")
+            base_url = "http://www.google.com/search?q="
+            query = query[6:]
+            final_url = base_url + query.replace(" ","%20")
+            webbrowser.open(final_url, new = 2)        
+
         elif("stop" in query):
             speak("Understood. Do you want me to shutdown or just keep quiet? ")
             y = takecommand().lower()
             if "shut down" not in y or "sleep" not in y:
                 speak("I do not know what you mean..")
-            elif "sleep" in u:
+            elif "sleep" in y:
                 break
             else:
                 speak("Shutting down now....")
                 time.sleep(3)
                 sys.exit()
         else:
-            pass         
+            pass
