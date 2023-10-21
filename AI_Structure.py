@@ -62,14 +62,14 @@ def weather():
     speak(
         " Temperature is "
         + str(current_temperature)
-        + "degree celcius"
-        + "\n atmospheric pressure is "
+        + "degrees celsius."
+        + "\n The atmospheric pressure is "
         + str(current_pressure)
-        + " \n in Hpa units"
-        + " \n humidity is "
+        + " \n in HPA units."
+        + " \n The humidity is "
         + str(current_humidiy)
         + "percent"
-        + " \n weather description is "
+        + " \n The weather can be described as "
         + str(weather_description)
     )
 def news():
@@ -119,6 +119,7 @@ if __name__ == "__main__":
         query=takecommand().lower()
         if(query.startswith('jarvis')):
             wishme()
+            query= query[6:]
         if("open" in query):
             if query.endswith("notepad"):
                 speak("opening Notepad..")
@@ -129,7 +130,8 @@ if __name__ == "__main__":
                 speak("Opening Calculator..")
                 calculator=variables.calculator
                 os.startfile(calculator)
-        elif any(keyword in query for keyword in question):
+            
+        if any(keyword in query for keyword in question):
             if "weather" in query:
                 weather()
             elif query.endswith("time"):
@@ -137,8 +139,7 @@ if __name__ == "__main__":
                 print(variables.time)
             elif query.endswith("date today") or query.endswith("date"):
                 speak(f"The date today is {variables.date}.")
-            elif(("news") in query or "headlines" in query):
-                news()    
+  
             else:
                         try:
                             client = wolframalpha.Client(variables.wolframalpha)
@@ -151,24 +152,23 @@ if __name__ == "__main__":
                             base_url = "http://www.google.com/search?q="
                             final_url = base_url + query.replace(" ","%20")
                             webbrowser.open(final_url, new = 2)
-
-        elif (query.startswith("search") or query.startswith("google")):
+        if(("news") in query or "headlines" in query):
+            news()  
+        if (query.startswith("search") or query.startswith("google")):
             speak("Searching. Please wait!")
             base_url = "http://www.google.com/search?q="
             query = query[6:]
             final_url = base_url + query.replace(" ","%20")
             webbrowser.open(final_url, new = 2)        
 
-        elif("stop" in query):
+        if("stop" in query):
             speak("Understood. Do you want me to shutdown or just keep quiet? ")
             y = takecommand().lower()
-            if "shut down" not in y or "sleep" not in y:
-                speak("I do not know what you mean..")
-            elif "sleep" in y:
-                break
-            else:
+            if "shut down" in y:
                 speak("Shutting down now....")
                 time.sleep(3)
                 sys.exit()
-        else:
-            pass
+            elif "sleep" in y:
+                break
+            else:
+                speak("I don't know what you mean..")
