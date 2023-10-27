@@ -8,8 +8,10 @@ import time
 import webbrowser
 import random
 import sys
+import json
 from GoogleNews import GoogleNews
 from num2words import num2words
+
 
 googlenews = GoogleNews()
 cnewscheck = 0
@@ -39,10 +41,10 @@ def takecommand():
     query=input("Enter the request to the Assistant: ")
     try:
         print("Recognizing.....")
-        print("User said :", query)
+        print("User:", query)
     except Exception as e:
         return " "
-    
+   
     return query
 def weather():
     speak("Which city's weather do you want to know?")
@@ -114,10 +116,26 @@ def addordinal(n):
     ordinal = num2words(n, to="ordinal_num")  # ordinal values 1 too first
     return ordinal
 
-if __name__ == "__main__":
+def notes():
+    try:
+        with open('data.json', 'r') as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        with open('data.json', 'w') as f:
+            data = json.load(f)
+    speak("What should the title of our note be? ")
+    y = takecommand()
+    speak("What do you want me to note down? ")
+    z = takecommand()
+    data[y] = z
+    with open('data.json', 'w') as f:
+        json.dump(data, f)
+    speak("Noted.")
+
+def ai():
     while True:
-        query=takecommand().lower()
-        if(query.startswith('jarvis')):
+        query = takecommand().lower()
+        if (query.startswith('jarvis')):
             wishme()
             query= query[6:]
         if("open" in query):
@@ -131,7 +149,7 @@ if __name__ == "__main__":
                 calculator=variables.calculator
                 os.startfile(calculator)
             
-        if any(keyword in query for keyword in question):
+        if any(query.startswith(keyword) for keyword in question):
             if "weather" in query:
                 weather()
             elif query.endswith("time"):
@@ -172,3 +190,50 @@ if __name__ == "__main__":
                 break
             else:
                 speak("I don't know what you mean..")
+        if ("take a note" in query or "note down" in query or "add a note" in query or 'create note' in query):
+            try:
+                with open('data.json', 'r') as f:
+                    data = json.load(f)
+            except FileNotFoundError:
+                with open('data.json', 'w') as f:
+                    a = {}
+                    json.dump(a,f)
+                with open('data.json','r') as f:
+                    data = json.load(f)
+            speak("What should the title of our note be? ")
+            y = takecommand()
+            speak("What do you want me to note down? ")
+            z = takecommand()
+            data[y] = z
+            with open('data.json', 'w') as f:
+                json.dump(data, f)
+            speak("Noted.")
+
+        if ("show me my notes" in query or "list notes" in query):
+            try:
+                with open('data.json', 'r') as f:
+                    data = json.load(f)
+
+                keys = data.keys()
+                i = 0
+                for ke in keys:
+                    i +=1
+                speak("Searching for Notes....")
+                speak(f"You have {num2words(i)} Notes...")
+                speak("Reading Note Headlines now..")
+                for keys in keys:
+                    speak(keys)
+                    print(keys+": "+data[keys][:10]+"......")
+
+            except FileNotFoundError:
+                speak("You have no notes. Would you like to create one?")
+                b = takecommand().lower
+                if ("yes" in b):
+                    notes()
+                else:
+                    speak("Understood!")
+            except Exception as e:
+                speak("Unknown Error")
+                print(e)
+
+ai()

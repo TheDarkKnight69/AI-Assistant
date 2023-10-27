@@ -1,34 +1,40 @@
 import tkinter as tk
 from tkinter import ttk
+import query
+import importlib
 
 # Function to handle button click
-def send_message():
-    message = input_box.get()
-    # You can add code here to process the user's input or trigger voice assistant actions
-    # For this example, we will print the message
-    print(f"User: {message}")
-    input_box.delete(0, tk.END)  # Clear the input box
+def takecommand():
+    q = input_box.get()
+    try:
+        q = q.lower()
+        # Add any code to process 'q' here
+        input_box.delete(0, tk.END)
+        return q
+    except Exception as e:
+        # Handle exceptions if necessary
+        input_box.delete(0, tk.END)
+        pass
+def handle_gui_button_click():
+    query = takecommand()
+    input_box.delete(0, tk.END)
+    mod = importlib.import_module("AI_Structure")
+    # Pass 'query' to your ai() function or process it here as needed
+    mod.ai(query)
 
 # Create the main window
 root = tk.Tk()
 root.title("Voice Assistant")
 root.geometry('500x700')
 
-# Load the background image using PhotoImage
-bg_image = tk.PhotoImage(file="visualizer.gif")  # Replace "your_image.gif" with your image file
-
-# Create a label to display the background image
-bg_label = tk.Label(root, image=bg_image)
-bg_label.place(relwidth=1, relheight=1)  # Cover the entire window
-
 # Create a frame for the menu (left side)
 menu_frame = tk.Frame(root, background="white")
 menu_frame.pack(side=tk.LEFT, fill=tk.BOTH)
 
 # Create menu items with padding to control the width
-menu_item_1 = tk.Label(menu_frame, text="File", background="white", padx=50, pady = 10)
+menu_item_1 = tk.Label(menu_frame, text="File", background="white", padx=50, pady=10)
 menu_item_1.pack(fill=tk.BOTH)
-menu_item_2 = tk.Label(menu_frame, text="Exit", background="white", padx=50, pady = 10)
+menu_item_2 = tk.Label(menu_frame, text="Exit", background="white", padx=50, pady=10)
 menu_item_2.pack(fill=tk.BOTH)
 
 # Create a frame for communication box and enter button (bottom)
@@ -43,7 +49,7 @@ input_box_style.configure("Rounded.TEntry", borderwidth=10, relief="sunken", pad
 input_box["style"] = "Rounded.TEntry"
 
 # Create the enter button
-enter_button = tk.Button(bottom_frame, text="Enter", command=send_message, background="white")
+enter_button = tk.Button(bottom_frame, text="Enter", command=handle_gui_button_click, background="white")  # Change 'ai.ai' to 'takecommand'
 enter_button.pack(side=tk.LEFT, padx=10, pady=10)
 
 # Start the main event loop
