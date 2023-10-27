@@ -118,17 +118,17 @@ def addordinal(n):
 
 def notes():
     try:
-        with open('data.json', 'r') as f:
+        with open('notes.json', 'r') as f:
             data = json.load(f)
     except FileNotFoundError:
-        with open('data.json', 'w') as f:
+        with open('notes.json', 'w') as f:
             data = json.load(f)
     speak("What should the title of our note be? ")
     y = takecommand()
     speak("What do you want me to note down? ")
     z = takecommand()
     data[y] = z
-    with open('data.json', 'w') as f:
+    with open('notes.json', 'w') as f:
         json.dump(data, f)
     speak("Noted.")
 
@@ -192,26 +192,26 @@ def ai():
                 speak("I don't know what you mean..")
         if ("take a note" in query or "note down" in query or "add a note" in query or 'create note' in query):
             try:
-                with open('data.json', 'r') as f:
+                with open('notes.json', 'r') as f:
                     data = json.load(f)
             except FileNotFoundError:
-                with open('data.json', 'w') as f:
+                with open('notes.json', 'w') as f:
                     a = {}
                     json.dump(a,f)
-                with open('data.json','r') as f:
+                with open('notes.json','r') as f:
                     data = json.load(f)
             speak("What should the title of our note be? ")
             y = takecommand()
             speak("What do you want me to note down? ")
             z = takecommand()
             data[y] = z
-            with open('data.json', 'w') as f:
+            with open('notes.json', 'w') as f:
                 json.dump(data, f)
             speak("Noted.")
 
         if ("show me my notes" in query or "list notes" in query):
             try:
-                with open('data.json', 'r') as f:
+                with open('notes.json', 'r') as f:
                     data = json.load(f)
 
                 keys = data.keys()
