@@ -1,17 +1,18 @@
 import pyttsx3
 import os
 import datetime
+import time
 import variables
 import wolframalpha
 import requests
-import time
 import webbrowser
 import random
 import sys
 import json
 from GoogleNews import GoogleNews
 from num2words import num2words
-
+from win10toast import ToastNotifier
+import winsound
 
 googlenews = GoogleNews()
 cnewscheck = 0
@@ -44,7 +45,7 @@ def takecommand():
         print("User:", query)
     except Exception as e:
         return " "
-   
+
     return query
 def weather():
     speak("Which city's weather do you want to know?")
@@ -132,6 +133,26 @@ def notes():
         json.dump(data, f)
     speak("Noted.")
 
+def reminder(title,message,duration):
+    toaster=ToastNotifier()
+    try:
+        duration=duration.split()
+        if(duration[0].isnumeric()):
+            if(duration[1] in ["m","min","minutes","minute"]):
+                timee=60*int(duration[0])
+            elif(duration[1] in ["s","secs","seconds","sec","second"]):
+                timee=int(duration[0])
+            elif(duration[1] in ["h","hrs","hours","hour"]):
+                timee=60*60*int(duration[0])
+            time.sleep(timee)
+            toaster.show_toast(title,message,duration=5)
+            speak(f"Your reminder with the title {title},message {message} is now triggered")
+    except Exception as e:
+        print(e)
+        speak("Wrong format of duration,Retry again!")
+    
+
+
 def ai():
     while True:
         query = takecommand().lower()
@@ -157,7 +178,7 @@ def ai():
                 print(variables.time)
             elif query.endswith("date today") or query.endswith("date"):
                 speak(f"The date today is {variables.date}.")
-  
+
             else:
                         try:
                             client = wolframalpha.Client(variables.wolframalpha)
@@ -235,5 +256,16 @@ def ai():
             except Exception as e:
                 speak("Unknown Error")
                 print(e)
+        if("set reminder" in query or "remind me" in query):
+            speak("what do you want to add as the title")
+            print("what do you want to add as the title")
+            tl=takecommand()
+            speak("What do you want the message to be:")
+            print("What do you want the message to be:")
+            mes=takecommand()
+            speak("After what amount of time do you want to get notified about it?")
+            print("After what amount of time do you want to get notified about it?")
+            dur=takecommand()
+            reminder(tl,mes,dur)
 
 ai()
