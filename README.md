@@ -36,7 +36,7 @@ Adjust VoicePy Assistant to fit your preferences:
 We welcome contributions! If you have ideas or want to improve VoicePy Assistant, check out our [contribution guidelines](CONTRIBUTING.md).
 
 ## Support
-If you encounter any issues or have questions, visit our [support page](https://voicepy-support.com) or open an [issue on GitHub](https://github.com/TheDarkKnight69/AI-Assisttant/issues).
+If you encounter any issues or have questions, visit our [support page](https://voicepy-support.com) or open an [issue on GitHub](https://github.com/TheDarkKnight69/AI-Assistant/issues).
 
 ## License
 VoicePy Assistant is licensed under the [MIT License](LICENSE).
