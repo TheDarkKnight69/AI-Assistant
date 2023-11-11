@@ -12,6 +12,4 @@ VoicePy Assistant is a powerful voice-activated assistant written in Python, des
 
 ## Getting Started
 
-1. **Installation:**
-   ```bash
-   pip install voicepy-assistant
+
