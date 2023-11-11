@@ -9,6 +9,7 @@ import webbrowser
 import random
 import sys
 import json
+import speech_recognition as speech
 from GoogleNews import GoogleNews
 from num2words import num2words
 from win10toast import ToastNotifier
@@ -17,7 +18,7 @@ import winsound
 googlenews = GoogleNews()
 cnewscheck = 0
 question = ["what", "why", "how", "who", "where"]
-
+opt=False
 engine = pyttsx3.init("sapi5")  
 voices = engine.getProperty("voices")
 engine.setProperty("voice", voices[0].id)
@@ -38,15 +39,9 @@ def wishme():
         
         speak(random.choice(variables.greetings))
 
-def takecommand():
-    query=input("Enter the request to the Assistant: ")
-    try:
-        print("Recognizing.....")
-        print("User:", query)
-    except Exception as e:
-        return " "
 
-    return query
+
+
 def weather():
     speak("Which city's weather do you want to know?")
     city = takecommand().lower()
@@ -154,118 +149,158 @@ def reminder(title,message,duration):
 
 
 def ai():
+    global opt
     while True:
-        query = takecommand().lower()
-        if (query.startswith('jarvis')):
-            wishme()
-            query= query[6:]
-        if("open" in query):
-            if query.endswith("notepad"):
-                speak("opening Notepad..")
-                notepad=variables.notepad
-                os.startfile(notepad)
-                query=""
-            elif(query.endswith("calculator")):
-                speak("Opening Calculator..")
-                calculator=variables.calculator
-                os.startfile(calculator)
-            
-        if any(query.startswith(keyword) for keyword in question):
-            if "weather" in query:
-                weather()
-            elif query.endswith("time"):
-                speak(f"The time right now is {variables.time}  ..")
-                print(variables.time)
-            elif query.endswith("date today") or query.endswith("date"):
-                speak(f"The date today is {variables.date}.")
+        speak("What mode do you want to use it in Yes for Speech No for Text")
+        q=takecommand().lower()
+        if(q=="yes"):
+            opt=True
+            speak("Using voice as input")
+        elif(q=="no"):
+            opt=False
+            speak("Using text as input")
+        else:
+            speak("Wrong choice using text mode")
+            opt=False
+        while True:
+            speak(opt)
+            query = takecommand().lower()
+            if (query.startswith('jarvis')):
+                wishme()
+                query= query[6:]
+            if("open" in query):
+                if query.endswith("notepad"):
+                    speak("opening Notepad..")
+                    notepad=variables.notepad
+                    os.startfile(notepad)
+                    query=""
+                elif(query.endswith("calculator")):
+                    speak("Opening Calculator..")
+                    calculator=variables.calculator
+                    os.startfile(calculator)
+                
+            if any(query.startswith(keyword) for keyword in question):
+                if "weather" in query:
+                    weather()
+                elif query.endswith("time"):
+                    speak(f"The time right now is {variables.time}  ..")
+                    print(variables.time)
+                elif query.endswith("date today") or query.endswith("date"):
+                    speak(f"The date today is {variables.date}.")
 
-            else:
-                        try:
-                            client = wolframalpha.Client(variables.wolframalpha)
-                            res=client.query(query)
-                            print(next(res.results).text)
-                            answer = next(res.results).text
-                            speak(f"The Answer is {answer}")
-                        except:
-                            speak("I'm sorry, I could not understand you. I will search the web for an answer. Hang on! ")
-                            base_url = "http://www.google.com/search?q="
-                            final_url = base_url + query.replace(" ","%20")
-                            webbrowser.open(final_url, new = 2)
-        if(("news") in query or "headlines" in query):
-            news()  
-        if (query.startswith("search") or query.startswith("google")):
-            speak("Searching. Please wait!")
-            base_url = "http://www.google.com/search?q="
-            query = query[6:]
-            final_url = base_url + query.replace(" ","%20")
-            webbrowser.open(final_url, new = 2)        
-
-        if("stop" in query):
-            speak("Understood. Do you want me to shutdown or just keep quiet? ")
-            y = takecommand().lower()
-            if "shut down" in y:
-                speak("Shutting down now....")
-                time.sleep(3)
-                sys.exit()
-            elif "sleep" in y:
-                break
-            else:
-                speak("I don't know what you mean..")
-        if ("take a note" in query or "note down" in query or "add a note" in query or 'create note' in query):
-            try:
-                with open('notes.json', 'r') as f:
-                    data = json.load(f)
-            except FileNotFoundError:
-                with open('notes.json', 'w') as f:
-                    a = {}
-                    json.dump(a,f)
-                with open('notes.json','r') as f:
-                    data = json.load(f)
-            speak("What should the title of our note be? ")
-            y = takecommand()
-            speak("What do you want me to note down? ")
-            z = takecommand()
-            data[y] = z
-            with open('notes.json', 'w') as f:
-                json.dump(data, f)
-            speak("Noted.")
-
-        if ("show me my notes" in query or "list notes" in query):
-            try:
-                with open('notes.json', 'r') as f:
-                    data = json.load(f)
-
-                keys = data.keys()
-                i = 0
-                for ke in keys:
-                    i +=1
-                speak("Searching for Notes....")
-                speak(f"You have {num2words(i)} Notes...")
-                speak("Reading Note Headlines now..")
-                for keys in keys:
-                    speak(keys)
-                    print(keys+": "+data[keys][:10]+"......")
-
-            except FileNotFoundError:
-                speak("You have no notes. Would you like to create one?")
-                b = takecommand().lower
-                if ("yes" in b):
-                    notes()
                 else:
-                    speak("Understood!")
-            except Exception as e:
-                speak("Unknown Error")
-                print(e)
-        if("set reminder" in query or "remind me" in query):
-            speak("what do you want to add as the title")
-            print("what do you want to add as the title")
-            tl=takecommand()
-            speak("What do you want the message to be:")
-            print("What do you want the message to be:")
-            mes=takecommand()
-            speak("After what amount of time do you want to get notified about it?")
-            print("After what amount of time do you want to get notified about it?")
-            dur=takecommand()
-            reminder(tl,mes,dur)
+                            try:
+                                client = wolframalpha.Client(variables.wolframalpha)
+                                res=client.query(query)
+                                print(next(res.results).text)
+                                answer = next(res.results).text
+                                speak(f"The Answer is {answer}")
+                            except:
+                                speak("I'm sorry, I could not understand you. I will search the web for an answer. Hang on! ")
+                                base_url = "http://www.google.com/search?q="
+                                final_url = base_url + query.replace(" ","%20")
+                                webbrowser.open(final_url, new = 2)
+            if(("news") in query or "headlines" in query):
+                news()  
+            if (query.startswith("search") or query.startswith("google")):
+                speak("Searching. Please wait!")
+                base_url = "http://www.google.com/search?q="
+                query = query[6:]
+                final_url = base_url + query.replace(" ","%20")
+                webbrowser.open(final_url, new = 2)        
 
+            if("stop" in query):
+                speak("Understood. Do you want me to shutdown or just keep quiet? ")
+                y = takecommand().lower()
+                if "shut down" in y:
+                    speak("Shutting down now....")
+                    time.sleep(3)
+                    sys.exit()
+                elif "sleep" in y:
+                    break
+                else:
+                    speak("I don't know what you mean..")
+            if ("take a note" in query or "note down" in query or "add a note" in query or 'create note' in query):
+                try:
+                    with open('notes.json', 'r') as f:
+                        data = json.load(f)
+                except FileNotFoundError:
+                    with open('notes.json', 'w') as f:
+                        a = {}
+                        json.dump(a,f)
+                    with open('notes.json','r') as f:
+                        data = json.load(f)
+                speak("What should the title of our note be? ")
+                y = takecommand()
+                speak("What do you want me to note down? ")
+                z = takecommand()
+                data[y] = z
+                with open('notes.json', 'w') as f:
+                    json.dump(data, f)
+                speak("Noted.")
+
+            if ("show me my notes" in query or "list notes" in query):
+                try:
+                    with open('notes.json', 'r') as f:
+                        data = json.load(f)
+
+                    keys = data.keys()
+                    i = 0
+                    for ke in keys:
+                        i +=1
+                    speak("Searching for Notes....")
+                    speak(f"You have {num2words(i)} Notes...")
+                    speak("Reading Note Headlines now..")
+                    for keys in keys:
+                        speak(keys)
+                        print(keys+": "+data[keys][:10]+"......")
+
+                except FileNotFoundError:
+                    speak("You have no notes. Would you like to create one?")
+                    b = takecommand().lower
+                    if ("yes" in b):
+                        notes()
+                    else:
+                        speak("Understood!")
+                except Exception as e:
+                    speak("Unknown Error")
+                    print(e)
+            if("set reminder" in query or "remind me" in query):
+                speak("what do you want to add as the title")
+                print("what do you want to add as the title")
+                tl=takecommand()
+                speak("What do you want the message to be:")
+                print("What do you want the message to be:")
+                mes=takecommand()
+                speak("After what amount of time do you want to get notified about it?")
+                print("After what amount of time do you want to get notified about it?")
+                dur=takecommand()
+                reminder(tl,mes,dur)
+
+def takecommand():
+    if(opt==True):
+        r=speech.Recognizer()
+        with speech.Microphone() as source:   
+            print("Listening")
+            r.pause_threshold=0.4
+            r.non_speaking_duration=0.4
+            r.energy_threshold=300
+            audio=r.listen(source)
+        try:
+            print("Recognizing")
+            query=r.recognize_google(audio, language="en-in")
+            print("User said :",query)
+        except Exception as e:
+            speak("Couldn't catch what you said")
+            return " "
+        return query
+    else:
+        query=input("Enter the request to the Assistant: ")
+        try:
+            print("Recognizing.....")
+            print("User:", query)
+        except Exception as e:
+            return " "
+
+        return query
 ai()
