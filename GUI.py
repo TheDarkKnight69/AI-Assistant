@@ -2,30 +2,24 @@ import tkinter as tk
 from tkinter import ttk
 import query
 import importlib
-
+from AI_Structure import *
 # Function to handle button click
-def takecommand():
-    q = input_box.get()
-    try:
-        q = q.lower()
-        # Add any code to process 'q' here
-        input_box.delete(0, tk.END)
-        return q
-    except Exception as e:
-        # Handle exceptions if necessary
-        input_box.delete(0, tk.END)
-        pass
-def handle_gui_button_click():
-    query = takecommand()
-    input_box.delete(0, tk.END)
-    mod = importlib.import_module("AI_Structure")
-    # Pass 'query' to your ai() function or process it here as needed
-    mod.ai(query)
-
-# Create the main window
 root = tk.Tk()
 root.title("Voice Assistant")
 root.geometry('500x700')
+
+def value():
+    value = input_box.get()
+    return value
+    input_box.delete('1.0', tk.END)
+    
+def ask():
+    user_val = value()
+    bot_val = ai(user_val)
+    output_text.insert(tk.END, "You: "+user_val+"\n")
+    output_text.insert(tk.END, "Assistant: "+str(bot_val)+"\n")
+
+# Create the main window
 
 # Create a frame for the menu (left side)
 menu_frame = tk.Frame(root, background="white")
@@ -49,8 +43,11 @@ input_box_style.configure("Rounded.TEntry", borderwidth=10, relief="sunken", pad
 input_box["style"] = "Rounded.TEntry"
 
 # Create the enter button
-enter_button = tk.Button(bottom_frame, text="Enter", command=handle_gui_button_click, background="white")  # Change 'ai.ai' to 'takecommand'
+enter_button = tk.Button(bottom_frame, text="Enter", command=ask, background="white")  # Change 'ai.ai' to 'takecommand'
 enter_button.pack(side=tk.LEFT, padx=10, pady=10)
+
+output_text = tk.Text(root, height=41)  # Or use tk.Label if you prefer a single-line display
+output_text.pack(side=tk.BOTTOM, fill=tk.X)
 
 # Start the main event loop
 root.mainloop()
