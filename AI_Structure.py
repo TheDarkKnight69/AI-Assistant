@@ -64,7 +64,7 @@ def weather():
     z = x["weather"]
 
     weather_description = z[0]["description"]
-    speak(
+    a = print(
         " Temperature is "
         + str(current_temperature)
         + "degrees celsius."
@@ -77,19 +77,8 @@ def weather():
         + " \n The weather can be described as "
         + str(weather_description)
     )
-    print(
-        " Temperature is "
-        + str(current_temperature)
-        + "degrees celsius."
-        + "\n The atmospheric pressure is "
-        + str(current_pressure)
-        + " \n in HPA units."
-        + " \n The humidity is "
-        + str(current_humidiy)
-        + "percent"
-        + " \n The weather can be described as "
-        + str(weather_description)
-    )
+    speak(a)
+    print(a)
 def news():
     while True:
         speak("Which topic do you want to hear the news or headlines on?")
@@ -231,7 +220,7 @@ def ai(query):
             final_url = base_url + query.replace(" ","%20")
             webbrowser.open(final_url, new = 2)        
 
-        if("stop" in query):
+        if(query.startswtith("stop")):
             speak("Understood. ")
             print("Understood. ")
             speak("Shutting down now....")
@@ -311,7 +300,7 @@ def ai(query):
 def speech_to_text():
     r=speech.Recognizer()
     with speech.Microphone() as source:   
-        print("Listening")
+        speak("Listening")
         r.pause_threshold=0.4
         r.non_speaking_duration=0.4
         r.energy_threshold=300
