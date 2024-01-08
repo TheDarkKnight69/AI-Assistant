@@ -171,7 +171,7 @@ def ai(query):
 
     if (query.startswith('jarvis')):
         wishme()
-        query= query[6:]
+    query= query[6:]
     if("open" in query):
         if query.endswith("notepad"):
             speak("opening Notepad..")

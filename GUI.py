@@ -4,16 +4,35 @@ import query
 import importlib
 from AI_Structure import *
 import json
+import sv_ttk
 
 
-#preferences = {}
-#with open("C:\\Users\\SHAAYEQ\\Desktop\\AI-Assistant\\preferences.json", 'r') as f:
-#    json.load(preferences)
+
+preferences = {}
+with open("C:\\Users\\SHAAYEQ\\Desktop\\AI-Assistant\\preferences.json", 'r') as f:
+    preferences = json.load(f)
 
 # Function to handle button click
 root = tk.Tk()
 root.title("Voice Assistant")
 root.geometry('500x700')
+
+sv_ttk.set_theme("light")
+
+def change_theme():
+    # NOTE: The theme's real name is azure-<mode>
+    if sv_ttk.get_theme() == "light":
+        # Set light theme
+        sv_ttk.set_theme("dark")
+
+    else:
+        # Set dark theme
+        sv_ttk.set_theme("light")
+
+def save_button():
+    with open("C:\\Users\\SHAAYEQ\\Desktop\\AI-Assistant\\preferences.json", 'w') as f:
+        json.dump(preferences, f)
+    popup.destroy()
 
 def end():
     root.destroy()
@@ -39,7 +58,13 @@ def ask():
 def settings():
     popup = tk.Toplevel()
     popup.grab_set()
-
+    popup.title("Settings")
+    popup.geometry("400x300")
+    theme = tk.Checkbutton(popup, text = "Toggle the dark or light mode")
+    theme.config(command = change_theme)
+    theme.pack(side = tk.TOP, anchor = "nw")
+    save = tk.Button(popup, text = "Save", command = save_button)
+    save.pack(side = tk.BOTTOM, anchor = "se", padx = 15, pady = 15)
 # Create the main window
 
 # Create a frame for the menu (left side)
