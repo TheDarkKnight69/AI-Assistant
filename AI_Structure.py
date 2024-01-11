@@ -14,6 +14,8 @@ from GoogleNews import GoogleNews
 from num2words import num2words
 #from win10toast import ToastNotifier
 import winsound
+import geocoder
+
 
 googlenews = GoogleNews()
 cnewscheck = 0
@@ -48,13 +50,9 @@ def wishme():
 
 
 def weather():
-    speak("Which city's weather do you want to know?")
-    print("Which city's weather do you want to know?")
-    city = takecommand().lower()
-    speak(f"Fetching the weather details in {city}")
-    print(f"Fetching the weather details in {city}")
     apikey = variables.openweather
-    url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={apikey}&units=metric"
+    g = geocoder.ip('me')
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={g.city}&appid={apikey}&units=metric"
     weatherreq = requests.get(url)
     x = weatherreq.json()
     y = x["main"]
@@ -64,21 +62,11 @@ def weather():
     z = x["weather"]
 
     weather_description = z[0]["description"]
-    a = print(
-        " Temperature is "
-        + str(current_temperature)
-        + "degrees celsius."
-        + "\n The atmospheric pressure is "
-        + str(current_pressure)
-        + " \n in HPA units."
-        + " \n The humidity is "
-        + str(current_humidiy)
-        + "percent"
-        + " \n The weather can be described as "
-        + str(weather_description)
-    )
-    speak(a)
+    a = f"Temperature is {str(current_temperature)}degrees Celsius. \n The atmospheric pressure is {str(current_pressure)} in HPA units. \n The humidity is {str(current_humidiy)}percent\n The weather can be described as {str(weather_description)}"
+    
+    speak("test")
     print(a)
+    return str(a)
 def news():
     while True:
         speak("Which topic do you want to hear the news or headlines on?")
@@ -158,12 +146,16 @@ def reminder(title,message,duration):
                 timee=60*60*int(duration[0])
             time.sleep(timee)
             toaster.show_toast(title,message,duration=5)
-            speak(f"Your reminder with the title {title},message {message} is now triggered")
-            print(f"Your reminder with the title {title},message {message} is now triggered")
+            a = f"Your reminder with the title {title},message {message} is now triggered"
+            speak(a)
+            print(a)
+            return a
     except Exception as e:
         print(e)
-        speak("Wrong format of duration,Retry again!")
-        print("Wrong format of duration,Retry again!")
+        a = "Wrong format of duration,Retry again!"
+        speak(a)
+        print(a)
+        return a
     
 
 
@@ -171,14 +163,14 @@ def ai(query):
 
     if (query.startswith('jarvis')):
         wishme()
-    query= query[6:]
+        query= query[6:]
     if("open" in query):
         if query.endswith("notepad"):
             speak("opening Notepad..")
             print("opening Notepad..")
+            return "Opening Notepad.."
             notepad=variables.notepad
-            os.startfile(notepad)
-            query=""
+            os.startfile("C:\\Windows\\notepad.exe")
         elif(query.endswith("calculator")):
             speak("Opening Calculator..")
             print("Opening Calculator..")
@@ -189,12 +181,13 @@ def ai(query):
         if "weather" in query:
             weather()
         elif query.endswith("time"):
-            speak(f"The time right now is {variables.time}  ..")
+            speak(f"The time right now is {(str(datetime.datetime.now())[11:16])}  ..")
             print(f"The time right now is {variables.time}  ..")
-            print(variables.time)
+            return (str(datetime.datetime.now())[11:16])
         elif query.endswith("date today") or query.endswith("date"):
             speak(f"The date today is {variables.date}.")
-            print(f"The date today is {variables.date}.")
+            print(f"The date today is .")
+            return variables.date
         else:
             try:
                 client = wolframalpha.Client(variables.wolframalpha)
@@ -202,17 +195,17 @@ def ai(query):
                 print(next(res.results).text)
                 answer = next(res.results).text
                 speak(f"The Answer is {answer}")
-                print(f"The Answer is {answer}")
+                return answer
             except:
                 speak("I'm sorry, I could not understand you. I will search the web for an answer. Hang on! ")
                 print("I'm sorry, I could not understand you. I will search the web for an answer. Hang on! ")
-                
+                return "I'm sorry, I could not understand you. I will search the web for an answer. Hang on! "
                 base_url = "http://www.google.com/search?q="
                 final_url = base_url + query.replace(" ","%20")
                 webbrowser.open(final_url, new = 2)
-        if(("news") in query or "headlines" in query):
+    if(("news") in query or "headlines" in query):
             news()  
-        if (query.startswith("search") or query.startswith("google")):
+    if (query.startswith("search") or query.startswith("google")):
             speak("Searching. Please wait!")
             print("Searching. Please wait!")
             base_url = "http://www.google.com/search?q="
@@ -220,25 +213,24 @@ def ai(query):
             final_url = base_url + query.replace(" ","%20")
             webbrowser.open(final_url, new = 2)        
 
-        if(query.startswtith("stop")):
+    if(query.startswith("stop")):
             speak("Understood. ")
-            print("Understood. ")
             speak("Shutting down now....")
-            print("Shutting down now....")
             time.sleep(3)
             sys.exit()
+                        
             
             
-        if ("take a note" in query or "note down" in query or "add a note" in query or 'create note' in query):
-            try:
-                with open('notes.json', 'r') as f:
-                    data = json.load(f)
-            except FileNotFoundError:
-                with open('notes.json', 'w') as f:
-                    a = {}
-                    json.dump(a,f)
-                with open('notes.json','r') as f:
-                    data = json.load(f)
+    if ("take a note" in query or "note down" in query or "add a note" in query or 'create note' in query):
+        try:
+            with open('notes.json', 'r') as f:
+                data = json.load(f)
+        except FileNotFoundError:
+            with open('notes.json', 'w') as f:
+                a = {}
+                json.dump(a,f)
+            with open('notes.json','r') as f:
+                data = json.load(f)
                 speak("What should the title of our note be? ")
                 print("What should the title of our note be? ")
                 y = takecommand()
@@ -246,56 +238,55 @@ def ai(query):
                 print("What do you want me to note down? ")
                 z = takecommand()
                 data[y] = z
-                with open('notes.json', 'w') as f:
-                    json.dump(data, f)
+            with open('notes.json', 'w') as f:
+                json.dump(data, f)
                 speak("Noted.")
                 print("Noted.")
 
-        if ("show me my notes" in query or "list notes" in query):
-            try:
-                with open('notes.json', 'r') as f:
-                    data = json.load(f)
+    if ("show me my notes" in query or "list notes" in query):
+        try:
+            with open('notes.json', 'r') as f:
+                data = json.load(f)
 
-                keys = data.keys()
-                i = 0
-                for ke in keys:
-                    i +=1
-                print("Searching for Notes....")
-                speak("Searching for Notes....")
-                print(f"You have {num2words(i)} Notes...")
-                speak(f"You have {num2words(i)} Notes...")
-                print("Reading Note Headlines now..")
-                speak("Reading Note Headlines now..")                         
+            keys = data.keys()
+            i = 0
+            for ke in keys:
+                i +=1
+            print("Searching for Notes....")
+            speak("Searching for Notes....")
+            print()
+            return f"You have {num2words(i)} Notes..."
+            speak(f"You have {num2words(i)} Notes...")
+            print("Reading Note Headlines now..")
+            speak("Reading Note Headlines now..")                         
              
-                for keys in keys:
-                    speak(keys)
-                    print(keys+": "+data[keys][:10]+"......")
+            for keys in keys:
+                speak(keys)
+                print()
+                return keys+": "+data[keys][:10]+"......"
+        except FileNotFoundError:
+            print("You have no notes. Would you like to create one?")
+            speak("You have no notes. Would you like to create one?")
+            b = takecommand().lower
+            if ("yes" in b):
+                notes()
+            else:
+                speak("Understood!")
+        except Exception as e:
+            speak("Unknown Error")
+            print(e)
+    if("set reminder" in query or "remind me" in query):
+        speak("what do you want to add as the title")
+        print("what do you want to add as the title")
+        tl=takecommand()
+        speak("What do you want the message to be:")
+        print("What do you want the message to be:")
+        mes=takecommand()
+        speak("After what amount of time do you want to get notified about it?")
+        print("After what amount of time do you want to get notified about it?")
+        dur=takecommand()
+        reminder(tl,mes,dur)
 
-            except FileNotFoundError:
-                print("You have no notes. Would you like to create one?")
-                speak("You have no notes. Would you like to create one?")
-                b = takecommand().lower
-                if ("yes" in b):
-                    notes()
-                else:
-                    speak("Understood!")
-            except Exception as e:
-                speak("Unknown Error")
-                print(e)
-        if("set reminder" in query or "remind me" in query):
-            speak("what do you want to add as the title")
-            print("what do you want to add as the title")
-            tl=takecommand()
-            speak("What do you want the message to be:")
-            print("What do you want the message to be:")
-            mes=takecommand()
-            speak("After what amount of time do you want to get notified about it?")
-            print("After what amount of time do you want to get notified about it?")
-            dur=takecommand()
-            reminder(tl,mes,dur)
-        else:
-            speak("I do not understand what you mean!")
-            print("I do not understand what you mean!")
 
 def speech_to_text():
     r=speech.Recognizer()
