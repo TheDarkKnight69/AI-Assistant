@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-import query
 import importlib
 from AI_Structure import *
 import json
@@ -9,7 +8,7 @@ from PIL import Image, ImageTk
 
 
 preferences = {}
-with open("C:\\Users\\SHAAYEQ\\Desktop\\AI-Assistant\\preferences.json", 'r') as f:
+with open("E:\\Voice assistant code final\\AI-Assistant\\preferences.json", 'r') as f:
     preferences = json.load(f)
 
 # Function to handle button click
@@ -30,9 +29,9 @@ def change_theme():
         sv_ttk.set_theme("light")
         preferences["theme"] = "light"
 def save_button():
-    with open("C:\\Users\\SHAAYEQ\\Desktop\\AI-Assistant\\preferences.json", 'w') as f:
+    with open("E:\\Voice assistant code final\\AI-Assistant\\preferences.json", 'w') as f:
         json.dump(preferences, f)
-     
+
 
 def end():
     root.destroy()
@@ -66,13 +65,13 @@ def settings():
     popup.title("Settings")
     popup.geometry("400x300")
     tabControl = ttk.Notebook(popup) 
-  
+
     tab1 = ttk.Frame(tabControl) 
     tab2 = ttk.Frame(tabControl) 
-  
+
     tabControl.add(tab1, text ='Appearance') 
     tabControl.pack(expand = 1, fill ="both") 
-  
+
     theme_frame = tk.Label(tab1)
     theme_frame.pack(side = tk.TOP, anchor = "nw")
     theme = tk.Checkbutton(theme_frame)
@@ -108,7 +107,7 @@ file.add_command(label ='Exit', command = root.destroy)
 # Create a frame for communication box and enter button (bottom)
 bottom_frame = tk.Frame(root)
 bottom_frame.pack(side=tk.BOTTOM, fill=tk.BOTH)
-a = ImageTk.PhotoImage(Image.open("C:\\Users\\SHAAYEQ\\Desktop\\AI-Assistant\\mic.png").resize((20,20)))
+a = ImageTk.PhotoImage(Image.open("E:\\Voice assistant code final\\AI-Assistant\\mic.png").resize((20,20)))
 mic_button = tk.Button(bottom_frame, image = a, width = 25, height = 25, command = speech_to_text)
 mic_button.pack(side = tk.RIGHT, padx = 10, pady = 10, fill = tk.X)
 # Create the communication box with rounded tube-like appearance

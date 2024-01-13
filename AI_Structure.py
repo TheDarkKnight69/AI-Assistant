@@ -12,7 +12,7 @@ import json
 import speech_recognition as speech
 from GoogleNews import GoogleNews
 from num2words import num2words
-#from win10toast import ToastNotifier
+from win10toast import ToastNotifier
 import winsound
 import geocoder
 
@@ -27,7 +27,7 @@ engine.setProperty("voice", voices[0].id)
 engine.setProperty("rate", 130)
 
 def speak(audio):
-    engine.say(audio)  # Speak functions
+    engine.say(audio)  
     engine.runAndWait()
 
 def wishme():
@@ -67,51 +67,41 @@ def weather():
     speak("test")
     print(a)
     return str(a)
-def news():
-    while True:
-        speak("Which topic do you want to hear the news or headlines on?")
-        print("Which topic do you want to hear the news or headlines on?")
-        newstopic = takecommand().lower()
-        if newstopic == "stop":
-            break
-        if newstopic == " ":
-            cnewscheck += 1
-            if cnewscheck > 1:
-                speak("Logging off from news")
-                print("Logging off from news")
-                break
-            else:
-                continue
-        else:
-            cnewscheck = 0
-            speak(f"Getting news on {newstopic}")
-            print(f"Getting news on {newstopic}")
-            googlenews.get_news(newstopic)
-            googlenews.result()
-            a = googlenews.gettext()
-            lnews = len(a)
-            tempvar1 = ""
-            if lnews > 5:
-                for i in range(1, 6):
-                    tempvar1 = a[i]
-                    speak(addordinal(i))
-                    print(addordinal(i))
-                    time.sleep(0.5)
-                    speak(tempvar1)
-                    print(tempvar1)
+def news(query):
+    
+    newstopic=query
+    if(newstopic==" "):
+        speak("Wrong format,Please Try again")
+        print("Wrong format,Please Try again")
+        return
+    speak(f"Getting news on {newstopic}")
+    print(f"Getting news on {newstopic}")
+    googlenews.get_news(newstopic)
+    googlenews.result()
+    a = googlenews.gettext()
+    lnews = len(a)
+    tempvar1 = ""
+    if lnews > 5:
+        for i in range(1, 6):
+            tempvar1 = a[i]
+            speak(addordinal(i))
+            print(addordinal(i))
+            time.sleep(0.5)
+            speak(tempvar1)
+            print(tempvar1)
 
-            else:
-                for i in range(1, lnews + 1):
-                    tempvar1 = a[i]
-                    speak(addordinal(i))
-                    print(addordinal(i))
-                    time.sleep(0.5)
-                    speak(tempvar1)
-                    print(tempvar1)
-            googlenews.clear()
+    else:
+        for i in range(1, lnews + 1):
+            tempvar1 = a[i]
+            speak(addordinal(i))
+            print(addordinal(i))
+            time.sleep(0.5)
+            speak(tempvar1)
+            print(tempvar1)
+    googlenews.clear()
 
 def addordinal(n):
-    ordinal = num2words(n, to="ordinal_num")  # ordinal values 1 too first
+    ordinal = num2words(n, to="ordinal_num")  
     return ordinal
 
 def notes():
@@ -203,8 +193,23 @@ def ai(query):
                 base_url = "http://www.google.com/search?q="
                 final_url = base_url + query.replace(" ","%20")
                 webbrowser.open(final_url, new = 2)
-    if(("news") in query or "headlines" in query):
-            news()  
+    if(("news") in query or "headlines" in query):        
+        query=query.split()
+
+        for i in range (len(query)):
+            if(query[-1]=="news"):
+                query=query[-2::-1]
+                break
+            if("news"==query[i].lower()):
+                query=query[i+2::]
+                break
+        po=query
+        query=""
+        for i in po:
+            query=query+i+" "
+
+        news(query)
+
     if (query.startswith("search") or query.startswith("google")):
             speak("Searching. Please wait!")
             print("Searching. Please wait!")
@@ -259,7 +264,6 @@ def ai(query):
             speak(f"You have {num2words(i)} Notes...")
             print("Reading Note Headlines now..")
             speak("Reading Note Headlines now..")                         
-             
             for keys in keys:
                 speak(keys)
                 print()
