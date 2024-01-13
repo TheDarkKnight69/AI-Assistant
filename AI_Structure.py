@@ -10,20 +10,19 @@ import random
 import sys
 import json
 import speech_recognition as speech
-from GoogleNews import GoogleNews
 from num2words import num2words
 #from win10toast import ToastNotifier
 import winsound
 import geocoder
 
 
-googlenews = GoogleNews()
+
 cnewscheck = 0
 question = ["what", "why", "how", "who", "where"]
 opt=False
 engine = pyttsx3.init("sapi5")  
 voices = engine.getProperty("voices")
-engine.setProperty("voice", voices[0].id)
+engine.setProperty("voice", voices[1].id)
 engine.setProperty("rate", 130)
 
 def speak(audio):
@@ -49,57 +48,36 @@ def weather():
     p = y["pressure"]
     h = y["humidity"]
     z = x["weather"]
-
     weather_description = z[0]["description"]
-    try:
-        a = "Temperature is {str(current_temperature)} degrees Celsius.\nThe atmospheric pressure is {str(current_pressure)} in HPA units.\nThe humidity is {str(current_humidiy)} percent\nThe weather can be described as {str(weather_description)}"
-
-        
-        return "Temperature"
-    except Exception as e:
-        return e  # Correctly indented
+    a = f"Temperature is {str(t)} degrees Celsius.\nThe atmospheric pressure is {str(p)} in HPA units.\nThe humidity is {str(h)} percent.\nThe weather can be described as {str(weather_description)}"
+    speak(a)
+    return a
+ # Correctly indented
 def news():
-    while True:
-        speak("Which topic do you want to hear the news or headlines on?")
-        print("Which topic do you want to hear the news or headlines on?")
-        newstopic = takecommand().lower()
-        if newstopic == "stop":
-            break
-        if newstopic == " ":
-            cnewscheck += 1
-            if cnewscheck > 1:
-                speak("Logging off from news")
-                print("Logging off from news")
-                break
-            else:
-                continue
-        else:
-            cnewscheck = 0
-            speak(f"Getting news on {newstopic}")
-            print(f"Getting news on {newstopic}")
-            googlenews.get_news(newstopic)
-            googlenews.result()
-            a = googlenews.gettext()
-            lnews = len(a)
-            tempvar1 = ""
-            if lnews > 5:
-                for i in range(1, 6):
-                    tempvar1 = a[i]
-                    speak(addordinal(i))
-                    print(addordinal(i))
-                    time.sleep(0.5)
-                    speak(tempvar1)
-                    print(tempvar1)
+    query_params = {
+      "source": "bbc-news",
+      "sortBy": "top",
+      "apiKey": "55bb935bc77641058a8b245a2e33e239"
+    }
+    main_url = "https://newsapi.org/v1/articles"
+    res = requests.get(main_url, params=query_params)
+    result = res.json()
+    article = result["articles"]
+    results = []
+    i = 0
+    while i!=10:
+        for ar in article:
+            results.append(ar["title"])
+            i+=1
+    print(results)
+    a = ""
+    j = 1
+    for arti in results:
+        a += f"{j}) {arti}\n"
+        j +=1
+        speak(arti)
+    return str(a)
 
-            else:
-                for i in range(1, lnews + 1):
-                    tempvar1 = a[i]
-                    speak(addordinal(i))
-                    print(addordinal(i))
-                    time.sleep(0.5)
-                    speak(tempvar1)
-                    print(tempvar1)
-            googlenews.clear()
 
 def addordinal(n):
     ordinal = num2words(n, to="ordinal_num")  # ordinal values 1 too first
@@ -153,24 +131,25 @@ def reminder(title,message,duration):
 def ai(query):
 
     if (query.startswith('jarvis')):
-        wishme()
+        return wishme()
         query= query[6:]
     if("open" in query):
         if query.endswith("notepad"):
             speak("opening Notepad..")
             print("opening Notepad..")
-            return "Opening Notepad.."
             notepad=variables.notepad
             os.startfile("C:\\Windows\\notepad.exe")
-        elif(query.endswith("calculator")):
+            return "Opening Notepad.."
+        elif query.endswith("calculator"):
             speak("Opening Calculator..")
             print("Opening Calculator..")
             calculator=variables.calculator
             os.startfile(calculator)
+            return "Opening Calculator.."
                 
     if any(query.startswith(keyword) for keyword in question):
         if "weather" in query:
-            weather()
+            return weather()
         elif query.endswith("time"):
             speak(f"The time right now is {(str(datetime.datetime.now())[11:16])}  ..")
             print(f"The time right now is {variables.time}  ..")
@@ -195,20 +174,23 @@ def ai(query):
                 final_url = base_url + query.replace(" ","%20")
                 webbrowser.open(final_url, new = 2)
     if(("news") in query or "headlines" in query):
-            news()  
+        return news()
+        
+        #return [b for b in news()]
     if (query.startswith("search") or query.startswith("google")):
-            speak("Searching. Please wait!")
-            print("Searching. Please wait!")
-            base_url = "http://www.google.com/search?q="
-            query = query[6:]
-            final_url = base_url + query.replace(" ","%20")
-            webbrowser.open(final_url, new = 2)        
+        speak("Searching. Please wait!")
+        print("Searching. Please wait!")
+        base_url = "http://www.google.com/search?q="
+        query = query[6:]
+        final_url = base_url + query.replace(" ","%20")
+        webbrowser.open(final_url, new = 2)
+        return "Searching. Please wait!"        
 
     if(query.startswith("stop")):
-            speak("Understood. ")
-            speak("Shutting down now....")
-            time.sleep(3)
-            sys.exit()
+        speak("Understood. ")
+        speak("Shutting down now....")
+        time.sleep(3)
+        sys.exit()
                         
             
             
