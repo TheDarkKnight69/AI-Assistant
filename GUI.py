@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-import query
 import importlib
 from AI_Structure import *
 import json

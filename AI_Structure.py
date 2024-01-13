@@ -31,20 +31,9 @@ def speak(audio):
     engine.runAndWait()
 
 def wishme():
-    
-    hour = int(datetime.datetime.now().hour)
-    if hour >= 0 and hour < 12:
-        a = random.choice(variables.greetings)
-        speak(a)
-        return a
-    elif hour >= 12 and hour < 18:  
-        a = random.choice(variables.greetings)
-        speak(a)
-        return a
-    else:
-        a = random.choice(variables.greetings)
-        speak(a)
-        return a
+    a = random.choice(variables.greetings)
+    speak(a)
+    return a
 
 
 
@@ -56,17 +45,19 @@ def weather():
     weatherreq = requests.get(url)
     x = weatherreq.json()
     y = x["main"]
-    current_temperature = y["temp"]
-    current_pressure = y["pressure"]
-    current_humidiy = y["humidity"]
+    t = y["temp"]
+    p = y["pressure"]
+    h = y["humidity"]
     z = x["weather"]
 
     weather_description = z[0]["description"]
-    a = f"Temperature is {str(current_temperature)}degrees Celsius. \n The atmospheric pressure is {str(current_pressure)} in HPA units. \n The humidity is {str(current_humidiy)}percent\n The weather can be described as {str(weather_description)}"
-    
-    speak("test")
-    print(a)
-    return str(a)
+    try:
+        a = "Temperature is {str(current_temperature)} degrees Celsius.\nThe atmospheric pressure is {str(current_pressure)} in HPA units.\nThe humidity is {str(current_humidiy)} percent\nThe weather can be described as {str(weather_description)}"
+
+        
+        return "Temperature"
+    except Exception as e:
+        return e  # Correctly indented
 def news():
     while True:
         speak("Which topic do you want to hear the news or headlines on?")
