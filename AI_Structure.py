@@ -49,7 +49,7 @@ def weather():
     h = y["humidity"]
     z = x["weather"]
     weather_description = z[0]["description"]
-    a = f"Temperature is {str(t)} degrees Celsius.\nThe atmospheric pressure is {str(p)} in HPA units.\nThe humidity is {str(h)} percent.\nThe weather can be described as {str(weather_description)}"
+    a = f"\nTemperature is {str(t)} degrees Celsius.\nThe atmospheric pressure is {str(p)} in HPA units.\nThe humidity is {str(h)} percent.\nThe weather can be described as {str(weather_description)}"
     speak(a)
     return a
  # Correctly indented
@@ -69,8 +69,8 @@ def news():
         for ar in article:
             results.append(ar["title"])
             i+=1
-    print(results)
-    a = ""
+
+    a = "\nThe latest headlines are: \n"
     j = 1
     for arti in results:
         a += f"{j}) {arti}\n"
@@ -232,22 +232,15 @@ def ai(query):
             speak(f"You have {num2words(i)} Notes...")
             print("Reading Note Headlines now..")
             speak("Reading Note Headlines now..")                         
-             
+            a = "Notes: " 
             for keys in keys:
                 speak(keys)
                 print()
-                return keys+": "+data[keys][:10]+"......"
-        except FileNotFoundError:
-            print("You have no notes. Would you like to create one?")
-            speak("You have no notes. Would you like to create one?")
-            b = takecommand().lower
-            if ("yes" in b):
-                notes()
-            else:
-                speak("Understood!")
+                a = a+keys+": "+data[keys][:10]+"......"+"\n"
+            
+            return a
         except Exception as e:
-            speak("Unknown Error")
-            print(e)
+            return e
     if("set reminder" in query or "remind me" in query):
         speak("what do you want to add as the title")
         print("what do you want to add as the title")

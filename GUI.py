@@ -5,7 +5,8 @@ from AI_Structure import *
 import json
 import sv_ttk
 from PIL import Image, ImageTk
-
+import customtkinter as ctk
+global name_input
 
 preferences = {}
 with open("C:\\Users\\SHAAYEQ\\Desktop\\AI-Assistant\\preferences.json", 'r') as f:
@@ -18,6 +19,11 @@ root.geometry('500x700')
 
 sv_ttk.set_theme(preferences["theme"])
 
+def window_closed(event):
+    with open("C:\\Users\\SHAAYEQ\\Desktop\\AI-Assistant\\preferences.json", 'w') as f:
+        json.dump(preferences, f)    
+
+
 def change_theme():
     # NOTE: The theme's real name is azure-<mode>
     if sv_ttk.get_theme() == "light":
@@ -28,9 +34,9 @@ def change_theme():
         # Set dark theme
         sv_ttk.set_theme("light")
         preferences["theme"] = "light"
-def save_button():
-    with open("C:\\Users\\SHAAYEQ\\Desktop\\AI-Assistant\\preferences.json", 'w') as f:
-        json.dump(preferences, f)
+
+    
+    
      
 
 def end():
@@ -54,12 +60,16 @@ def ask():
         bot_val = ai(user_val)
         output_text.config(state = 'normal')
         output_text.insert(tk.END, "You: "+user_val+"\n")
-        output_text.insert(tk.END, "Assistant: \n"+str(bot_val)+"\n")
+        output_text.insert(tk.END, f"{preferences['name']}: {str(bot_val)}\n")
         output_text.config(state = 'disabled')
     else:
         pass
     
 def settings():
+    def nameee():
+        a = name_input.get()
+        preferences['name'] = a
+        print(preferences)
     popup = tk.Toplevel()
     popup.grab_set()
     popup.title("Settings")
@@ -76,10 +86,20 @@ def settings():
     theme_frame.pack(side = tk.TOP, anchor = "nw")
     theme = tk.Checkbutton(theme_frame)
     theme.config(command = change_theme)
-    theme.pack(side = tk.LEFT, anchor = "w", padx = 5)
+    theme.grid(column = 0, row = 0)
+    #theme.pack(padx = 5) #side = tk.LEFT, anchor = "w", 
     theme_text = tk.Label(theme_frame, text = "Toggle the dark or light mode")
-    theme_text.pack(side = tk.RIGHT, anchor = "e")
-    save = tk.Button(tab1, text = "Save", command = save_button)
+    theme_text.grid(column = 1, row = 0)
+    #theme_text.pack() #side = tk.RIGHT, anchor = "e"
+    name = tk.Label(theme_frame, text = "Name: ")
+    name.config(padx = 16, pady = 5)
+    name.grid(column = 0, row = 1) 
+    #name.pack()
+    name_input = tk.Entry(theme_frame, font= ("Arial", 10), width = 18)
+    name_input.insert(0, preferences["name"])
+    name_input.grid(column = 1, row = 1)
+
+    save = tk.Button(tab1, text = "Save", command=nameee)     
     save.pack(side = tk.BOTTOM, anchor = "se", padx = 15, pady = 15)
 # Create the main window
 
@@ -95,7 +115,6 @@ menu_bar.add_cascade(label ='Settings', menu = file)
 file.add_command(label ='Preferences', command = settings) 
 file.add_separator() 
 file.add_command(label ='Exit', command = root.destroy)
-
 
 
 # Create menu items with padding to control the width
@@ -123,8 +142,9 @@ enter_button = tk.Button(bottom_frame, text="Enter", command=ask)  # Change 'ai.
 enter_button.pack(side=tk.LEFT, padx=10, pady=10)
 
 output_text = tk.Text(root, height=41, state = 'disabled')  # Or use tk.Label if you prefer a single-line display
-output_text.pack(side=tk.BOTTOM, fill=tk.X)
+output_text.pack(side=tk.BOTTOM,expand = True, fill=tk.BOTH)
 
 root.config(menu = menu_bar)
 # Start the main event loop
+root.bind("<Destroy>", window_closed)
 root.mainloop()
