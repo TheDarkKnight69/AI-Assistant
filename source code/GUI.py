@@ -5,15 +5,15 @@ from AI_Structure import *
 import json
 import sv_ttk
 from PIL import Image, ImageTk
-<<<<<<< HEAD
-=======
+
+
 import customtkinter as ctk
 import speech_recognition as speech
 global name_input
->>>>>>> b6edd831942d8adb2ce0a3388728a1e0a70d594d
+
 
 preferences = {}
-with open("E:\\Voice assistant code final\\AI-Assistant\\preferences.json", 'r') as f:
+with open("preferences.json", 'r') as f:
     preferences = json.load(f)
 
 # Function to handle button click
@@ -24,7 +24,7 @@ root.geometry('500x700')
 sv_ttk.set_theme(preferences["theme"])
 
 def window_closed(event):
-    with open("E:\\Voice assistant code final\\AI-Assistant\\preferences.json", 'w') as f:
+    with open("preferences.json", 'w') as f:
         json.dump(preferences, f)    
 
 
@@ -55,13 +55,7 @@ def speech_input():
         r.non_speaking_duration=0.4
         r.energy_threshold=300
         audio=r.listen(source)
-<<<<<<< HEAD
         try:
-
-=======
-        
-        try:
->>>>>>> b6edd831942d8adb2ce0a3388728a1e0a70d594d
             query=r.recognize_google(audio, language="en-in")
             bot_val = ai(query.lower())
             output_text.config(state = 'normal')
@@ -82,10 +76,6 @@ def value():
     if len(str(value))>0:
         return value
 
-<<<<<<< HEAD
-        
-=======
->>>>>>> b6edd831942d8adb2ce0a3388728a1e0a70d594d
 def ask():
     if len(input_box.get()) > 0:
         user_val = value()
@@ -160,11 +150,7 @@ file.add_command(label ='Exit', command = root.destroy)
 # Create a frame for communication box and enter button (bottom)
 bottom_frame = tk.Frame(root)
 bottom_frame.pack(side=tk.BOTTOM, fill=tk.BOTH)
-<<<<<<< HEAD
-a = ImageTk.PhotoImage(Image.open("C:\\Users\\SHAAYEQ\\Desktop\\AI-Assistant\\mic.png").resize((20,20)))
-=======
-a = ImageTk.PhotoImage(Image.open("E:\\Voice assistant code final\\AI-Assistant\\mic.png").resize((20,20)))
->>>>>>> b6edd831942d8adb2ce0a3388728a1e0a70d594d
+a = ImageTk.PhotoImage(Image.open("mic.png").resize((20,20)))
 mic_button = tk.Button(bottom_frame, image = a, width = 25, height = 25, command = speech_input)
 mic_button.pack(side = tk.RIGHT, padx = 10, pady = 10, fill = tk.X)
 # Create the communication box with rounded tube-like appearance
