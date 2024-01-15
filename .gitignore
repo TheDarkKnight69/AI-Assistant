@@ -3,3 +3,4 @@ notes.json
 sound.py
 .gitignore
 .cache
+__pycache__/AI_Structure.cpython-311.pyc

@@ -11,7 +11,7 @@ import sys
 import json
 import speech_recognition as speech
 from num2words import num2words
-#from win10toast import ToastNotifier
+from win10toast import ToastNotifier
 import winsound
 import geocoder
 
@@ -49,10 +49,10 @@ def weather():
     h = y["humidity"]
     z = x["weather"]
     weather_description = z[0]["description"]
-    a = f"\nTemperature is {str(t)} degrees Celsius.\nThe atmospheric pressure is {str(p)} in HPA units.\nThe humidity is {str(h)} percent.\nThe weather can be described as {str(weather_description)}"
+    a = f"Temperature is {str(t)} degrees Celsius.\nThe atmospheric pressure is {str(p)} in HPA units.\nThe humidity is {str(h)} percent.\nThe weather can be described as {str(weather_description)}"
     speak(a)
     return a
- # Correctly indented
+# Correctly indented
 def news():
     query_params = {
       "source": "bbc-news",
@@ -69,8 +69,8 @@ def news():
         for ar in article:
             results.append(ar["title"])
             i+=1
-
-    a = "\nThe latest headlines are: \n"
+    print(results)
+    a = ""
     j = 1
     for arti in results:
         a += f"{j}) {arti}\n"
@@ -131,8 +131,8 @@ def reminder(title,message,duration):
 def ai(query):
 
     if (query.startswith('jarvis')):
-        return wishme()
         query= query[6:]
+        return wishme()
     if("open" in query):
         if query.endswith("notepad"):
             speak("opening Notepad..")
@@ -232,15 +232,22 @@ def ai(query):
             speak(f"You have {num2words(i)} Notes...")
             print("Reading Note Headlines now..")
             speak("Reading Note Headlines now..")                         
-            a = "Notes: " 
+             
             for keys in keys:
                 speak(keys)
                 print()
-                a = a+keys+": "+data[keys][:10]+"......"+"\n"
-            
-            return a
+                return keys+": "+data[keys][:10]+"......"
+        except FileNotFoundError:
+            print("You have no notes. Would you like to create one?")
+            speak("You have no notes. Would you like to create one?")
+            b = takecommand().lower
+            if ("yes" in b):
+                notes()
+            else:
+                speak("Understood!")
         except Exception as e:
-            return e
+            speak("Unknown Error")
+            print(e)
     if("set reminder" in query or "remind me" in query):
         speak("what do you want to add as the title")
         print("what do you want to add as the title")
@@ -263,12 +270,9 @@ def speech_to_text():
         r.energy_threshold=300
         audio=r.listen(source)
         try:
-            print("Recognizing")
             query=r.recognize_google(audio, language="en-in")
-            print("User said :",query)
         except Exception as e:
             speak("Couldn't catch what you said")
-            print("Couldn't catch what you said")
             return " "
         return query
 
