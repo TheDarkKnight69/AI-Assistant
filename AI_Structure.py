@@ -263,9 +263,10 @@ def speech_to_text():
         r.energy_threshold=300
         audio=r.listen(source)
         try:
-            print("Recognizing")
+
             query=r.recognize_google(audio, language="en-in")
-            print("User said :",query)
+
+            
         except Exception as e:
             speak("Couldn't catch what you said")
             print("Couldn't catch what you said")

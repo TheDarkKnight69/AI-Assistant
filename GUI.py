@@ -5,8 +5,6 @@ from AI_Structure import *
 import json
 import sv_ttk
 from PIL import Image, ImageTk
-import customtkinter as ctk
-global name_input
 
 preferences = {}
 with open("C:\\Users\\SHAAYEQ\\Desktop\\AI-Assistant\\preferences.json", 'r') as f:
@@ -43,21 +41,42 @@ def end():
     root.destroy()
     sys.exit()
 def speech_input():
-    a = speech_to_text()
-    return a
+    r=speech.Recognizer()
+    with speech.Microphone() as source:   
+        speak("Listening")
+        r.pause_threshold=0.4
+        r.non_speaking_duration=0.4
+        r.energy_threshold=300
+        audio=r.listen(source)
+        try:
+
+            query=r.recognize_google(audio, language="en-in")
+            bot_val = ai(query.lower())
+            output_text.config(state = 'normal')
+            output_text.insert(tk.END, "You: "+query+"\n")
+            output_text.insert(tk.END, f"{preferences['name']}: {str(bot_val)}\n")
+            output_text.config(state = 'disabled')
+            
+        except Exception as e:
+            speak("Couldn't catch what you said")
+            output_text.config(state = 'normal')
+            output_text.insert(tk.END, "You: "+query+"\n")
+            output_text.insert(tk.END, f"{preferences['name']}: {str(e)}\n")
+            output_text.config(state = 'disabled')
+    
 
 def value():
     value = input_box.get()
     if len(str(value))>0:
         return value
-    else:
-        return speech_input
+
         
 def ask():
     if len(input_box.get()) > 0:
         user_val = value()
+        print(user_val)
         input_box.delete('0',tk.END)
-        bot_val = ai(user_val)
+        bot_val = ai(user_val.lower())
         output_text.config(state = 'normal')
         output_text.insert(tk.END, "You: "+user_val+"\n")
         output_text.insert(tk.END, f"{preferences['name']}: {str(bot_val)}\n")
@@ -69,7 +88,7 @@ def settings():
     def nameee():
         a = name_input.get()
         preferences['name'] = a
-        print(preferences)
+
     popup = tk.Toplevel()
     popup.grab_set()
     popup.title("Settings")
@@ -127,7 +146,7 @@ file.add_command(label ='Exit', command = root.destroy)
 bottom_frame = tk.Frame(root)
 bottom_frame.pack(side=tk.BOTTOM, fill=tk.BOTH)
 a = ImageTk.PhotoImage(Image.open("C:\\Users\\SHAAYEQ\\Desktop\\AI-Assistant\\mic.png").resize((20,20)))
-mic_button = tk.Button(bottom_frame, image = a, width = 25, height = 25, command = speech_to_text)
+mic_button = tk.Button(bottom_frame, image = a, width = 25, height = 25, command = speech_input)
 mic_button.pack(side = tk.RIGHT, padx = 10, pady = 10, fill = tk.X)
 # Create the communication box with rounded tube-like appearance
 input_box = ttk.Entry(bottom_frame, width=10)
